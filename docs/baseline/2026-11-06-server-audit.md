@@ -35,3 +35,45 @@
 
 ## گام بعد
 اجرای صرفاً خواندنی `bash scripts/stage01_followup.sh` و بررسی خروجی بدون انتشار اطلاعات محرمانه. نتیجه در Issue #1 ثبت شود.
+
+
+## پیوست: ممیزی تکمیلی 2026-11-06 18:24:41 UTC
+
+**منبع:** خروجی کاربر از `nice -n 19 bash scripts/stage01_followup.sh`. خروجی اسکریپت به پایان رسیده، سپس اتصال SSH با `Connection reset by peer` قطع شده است. علت اتصال قطع‌شده از این داده‌ها معلوم نیست؛ هیچ نشانه‌ای از تغییر سیستم توسط اسکریپت وجود ندارد.
+
+### فضای ذخیره‌سازی و ظرفیت
+| مورد | اندازه |
+|---|---:|
+| Root filesystem | 116G کل / 102G استفاده‌شده / 14G آزاد / 89% |
+| Inodes | فقط 17% مصرف‌شده؛ مشکل شمار inode نیست |
+| /var/log | 3.9G |
+| systemd journal (active+archived) | 3.7G از 3.9G لاگ؛ نامزد اول بازبینی سیاست retention |
+| /var/backups | 167M |
+| /var/cache | 177M |
+| /var/lib/docker | 3.6G؛ **بدون پاکسازی عمومی/prune** |
+| /var/lib/postgresql | 4.5G؛ **هرگز حذف دستی نشود** |
+| /var/lib/aigetway | 1.3G؛ **فایل‌های نشست/داده حذف نشود** |
+| /root/.npm | 844M؛ بعد از بررسی cache و نیاز نسخه‌ها تصمیم‌گیری شود |
+| /root/.cache | 94M |
+| /opt | 15G؛ اندازه زیرپوشه‌ها فقط خواندنی بررسی شود |
+
+### فشار CPU/Swap
+- Swap استفاده‌شده حدود 2.63GiB در زمان اندازه‌گیری (آرایه `swpd=2756804 KiB`).
+- نمونه‌های متوالی `vmstat` نرخ `si=0` و `so=0` داشته‌اند؛ **Swap پرشده به معنی thrashing در آن لحظه نیست**.
+- نمونه‌های فعلی درصد `st` برابر **27% و 29%**، و `id` برابر 20–22% دارند. `steal` بالا می‌تواند نشان‌دهنده رقابت منابع میزبان مجازی باشد؛ باید تکرار و در صورت استمرار با ارائه‌دهنده VPS پیگیری شود.
+- میانگین بار و `r=13–14` نشان‌دهنده صف اجرای CPU؛ از استقرار Browser Worker موازی تا سنجش ظرفیت پرهیز شود.
+
+### وضعیت ابزارها
+- `codex-cli 0.154.0`
+- `dsh 0.2.1-rc.5`
+- Service unitهای `aigetway-api` و `aigetway-worker` و `antigravity-gateway-api` و `antigravity-gateway-worker` پیدا شده‌اند. **وضعیت ورود Antigravity هنوز ثابت نشده است**.
+- Nginx فقط `location = /aigetway` و `location ^~ /aigetway/` در grep گزارش کرده است؛ **نصب /aiapimaker هنوز انجام نشده**.
+
+### کارهای بعدی / منع تغییر خودسر
+1. اگر تأیید عملیاتی شد، نگهداری journal را با `journalctl --rotate` و `journalctl --vacuum-size=1G` محدود کنید؛ این کار **لاگ‌های قدیمی را حذف می‌کند**، بنابراین پیش از اجرا نیاز به سیاست retention و احتیاط در زمان حادثه دارد.
+2. بدون پاک‌سازی، `du -xhd1 /opt` و مسیرهای بزرگ را با `nice`/`ionice` بررسی کنید.
+3. صحت اتصال SSH، `systemctl is-active` و `curl .../healthz` بعد از reset بررسی شود.
+4. پیش از Stages نصب، فضای پایدار و فشار CPU به حد قابل‌قبول برسد.
+5. هیچ `docker system prune`، `rm -rf /var/lib/postgresql`، `swapoff` یا حذف نشست انجام نشود.
+
+**Gate:** `STAGE_01_IN_PROGRESS / CAPACITY_REVIEW_REQUIRED`؛ هنوز مجوز شروع نصب Stage 02 داده نشده است.
