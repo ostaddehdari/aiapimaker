@@ -43,3 +43,20 @@ Deployment URLs are environment-driven; **the final domain is not yet decided**.
 
 ## Boundaries
 Account schemas begin Stage 06; login Stage 07; providers Stage 11; workers Stage 21. A Plus/Pro subscription is not an unrestricted third-party API entitlement.
+
+
+## Stage 06 — schema and migrations, no production data
+
+The app now uses `AUTH_USER_MODEL = "users.User"` with UUID keys. **No production migrations have been applied.** Models cover tenants/memberships, providers/connectors/capabilities, per-user provider accounts, hashed scoped API token metadata, chats/messages, jobs/attempts/workers/leases and private artifacts.
+
+Read [Stage 06 data model](../docs/STAGE-06-DATA-MODEL.md) before adding auth or the provider adapters. Real object-level authorization is NOT yet implemented; do not expose these database models to the public API.
+
+Verify against disposable SQLite:
+```bash
+export DJANGO_SETTINGS_MODULE=config.settings.testing
+python manage.py makemigrations --check --dry-run
+python manage.py migrate --noinput
+python manage.py test apps.core --noinput
+```
+
+CI also checks the exact schema and seed replay against disposable PostgreSQL 16.
