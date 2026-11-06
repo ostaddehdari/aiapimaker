@@ -43,7 +43,9 @@ CSRF_TOKEN="VALUE_FROM_CSRF_JSON"
 curl -sS -b cookies.txt -c cookies.txt \
   -H "Content-Type: application/json" -H "X-CSRFToken: $CSRF_TOKEN" \
   -d '{"username":"demo","password":"YOUR_TEST_PASSWORD"}' \
-  "$BASE/login/"
+  "$BASE/login/" -o login.json
+# مقدار csrf_token جدید را از login.json بگیرید؛ Django پس از ورود آن را می‌چرخاند.
+LOGIN_CSRF_TOKEN="UPDATED_TOKEN_FROM_LOGIN_JSON"
 curl -sS -b cookies.txt "$BASE/me/"
 curl -sS -b cookies.txt -H "X-CSRFToken: $CSRF_TOKEN" \
   -X POST -H "Content-Type: application/json" -d '{}' "$BASE/logout/"
@@ -64,3 +66,9 @@ curl -sS -b cookies.txt -H "X-CSRFToken: $CSRF_TOKEN" \
 ## معیار قبولی
 
 Django `check`، Migrationهای جدید `users`، آزمون‌های ورود، CSRF، قفل موقت، لغو نشست، بازیابی رمز و Postgres CI سبز شوند؛ OpenAPI مسیرهای auth را فهرست کند. این نتیجه **تنها برای محیط CI** پذیرفته می‌شود و مجوز استقرار عمومی محسوب نمی‌شود.
+
+## فعال‌سازی بازیابی رمز در staging/production
+
+`PASSWORD_RESET_ENABLED=false` پیش‌فرض است. برای فعال‌سازی، SMTP واقعی را در EnvironmentFile محرمانه خارج از Git تنظیم کنید: `EMAIL_HOST`، `EMAIL_PORT`، `EMAIL_HOST_USER`، `EMAIL_HOST_PASSWORD` و `DEFAULT_FROM_EMAIL`. بدون این تنظیمات Django باید از فعال‌شدن بازیابی رمز خودداری کند. مقدارهای واقعی در GitHub، لاگ یا Swagger قرار نگیرند. در حالت CI فقط `locmem.EmailBackend` استفاده می‌شود.
+
+در خروجی ورود Django، `csrf_token` جدید برگردانده می‌شود؛ در Frontend لازم است پس از هر login موفق این مقدار جایگزین مقدار قبلی شود. برای درخواست‌های تغییردهنده داده، Cookie Session به‌تنهایی کافی نیست و هدر `X-CSRFToken` نیز الزامی است.
