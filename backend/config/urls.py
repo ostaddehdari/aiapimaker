@@ -37,6 +37,7 @@ def api_error(request):
 prefix = settings.API_BASE_PATH.lstrip("/")
 urlpatterns = [
     path(prefix, include("apps.core.urls")),
+    path(prefix + "auth/", include("apps.users.urls")), 
     path(prefix + "schema/", SpectacularAPIView.as_view(), name="schema"),
     path(
         prefix + "docs/",
