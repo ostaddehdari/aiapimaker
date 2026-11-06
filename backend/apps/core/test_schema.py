@@ -210,3 +210,25 @@ class SchemaIsolationTests(TestCase):
                 job=job, worker=worker, account=self.alice_account,
                 expires_at=timezone.now() + timedelta(minutes=5)
             )
+
+
+    def test_ordinary_save_rejects_cross_tenant_rows(self):
+        with self.assertRaises(ValidationError):
+            ProviderAccount.objects.create(
+                tenant=self.bob_tenant, owner=self.alice, provider=self.provider,
+                label="foreign-account",
+            )
+        with self.assertRaises(ValidationError):
+            Chat.objects.create(
+                tenant=self.alice_tenant, owner=self.alice, account=self.bob_account
+            )
+        with self.assertRaises(ValidationError):
+            Job.objects.create(
+                tenant=self.alice_tenant, owner=self.alice,
+                provider=self.provider, account=self.bob_account
+            )
+
+    def test_seeded_provider_catalogue_is_disabled_by_default(self):
+        records = Provider.objects.filter(slug__in=["chatgpt", "gemini", "deepseek", "qwen", "zai"])
+        self.assertEqual(records.count(), 5)
+        self.assertFalse(records.filter(is_enabled=True).exists())
