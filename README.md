@@ -4,12 +4,15 @@
 >
 > **Production target:** `https://srun.ir/aiapimaker/`
 >
-> **Status:** Planning / Stage 01 ready. No production deployment has occurred.
+> **Status:** Stage 01 audit active; Stage 02 repo tooling in review. No new service deployed. No production deployment has occurred.
 
 ## Roadmap
 - [40 stages / 320 work items](docs/ROADMAP-40-STAGES.md)
 - [Architecture and hard constraints](docs/ARCHITECTURE.md)
 - [Stage 01 execution playbook](docs/STAGE-01-PLAYBOOK.md)
+- [Stage 02 repository conventions](docs/BRANCHING-AND-RELEASES.md)
+- [Stage completion checklist](docs/STAGE-EXIT-CRITERIA.md)
+- [Draft Django API contract](docs/API-CONTRACT-DRAFT.md)
 
 ## Stack
 - React + TypeScript + Vite; Persian RTL layout; Vazirmatn/Vazir; Font Awesome; GSAP (respect reduced motion)
@@ -34,3 +37,16 @@ Every stage has exactly eight checkbox work items and a Definition of Done. No s
 4. Deploy to staging first. Production cutover requires explicit go/no-go.
 
 **Current public URL is a deployment target, not a claim that this new application is online.**
+
+## Independent application structure (Stage 02)
+
+| Folder | Purpose |
+|---|---|
+| `backend/` | Django/DRF (Stage 04) |
+| `frontend/` | React/TypeScript (Stage 05) |
+| `workers/` | Celery and Supervisor |
+| `connectors/` | Account-scoped and authorized provider integrations |
+| `infra/` | Nginx/systemd templates, staging and rollback |
+| `tests/` | Shared tests and fixtures |
+
+Setup and contribution guidance: [CONTRIBUTING.md](CONTRIBUTING.md). Target public domain/URL is **not final**; deployment must read it from configuration.
