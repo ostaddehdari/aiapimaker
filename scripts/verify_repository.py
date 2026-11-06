@@ -78,7 +78,10 @@ def main() -> int:
             print(f"UNSAFE FILE: {item}")
         return 1
 
-    print(f"REPOSITORY_STRUCTURE_PASS: {len(REQUIRED)} expected files; no denied files or unclosed Markdown fences")
+    print(
+        f"REPOSITORY_STRUCTURE_PASS: {len(REQUIRED)} expected files; "
+        "no denied files or unclosed Markdown fences"
+    )
     return 0
 
 
