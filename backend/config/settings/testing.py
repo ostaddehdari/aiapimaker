@@ -9,3 +9,8 @@ SESSION_COOKIE_SECURE = False
 CSRF_COOKIE_SECURE = False
 SECURE_SSL_REDIRECT = False
 PASSWORD_HASHERS = ["django.contrib.auth.hashers.MD5PasswordHasher"]
+
+PASSWORD_RESET_ENABLED = True
+EMAIL_BACKEND = "django.core.mail.backends.locmem.EmailBackend"
+AUTH_LOGIN_USER_LIMIT = 3
+AUTH_LOGIN_IP_LIMIT = 15
