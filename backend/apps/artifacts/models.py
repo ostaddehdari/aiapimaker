@@ -5,6 +5,8 @@ import uuid
 from django.core.exceptions import ValidationError
 from django.db import models
 
+from apps.users.models import TenantMembership
+
 
 class ArtifactQuerySet(models.QuerySet):
     def for_owner(self, user):
@@ -46,6 +48,10 @@ class Artifact(models.Model):
 
     def clean(self):
         super().clean()
+        if self.owner_id and self.tenant_id and not TenantMembership.objects.filter(
+            tenant_id=self.tenant_id, user_id=self.owner_id, is_active=True
+        ).exists():
+            raise ValidationError({"owner": "Artifact owner must be an active tenant member."})
         if self.job_id and (
             self.job.owner_id != self.owner_id or self.job.tenant_id != self.tenant_id
         ):
