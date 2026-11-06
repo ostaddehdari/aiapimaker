@@ -138,7 +138,7 @@ class LoginView(PublicAPIView):
 class LogoutView(APIView):
     permission_classes = [IsAuthenticated]
 
-    @extend_schema(responses={200: OpenApiResponse(description="Session revoked")})
+    @extend_schema(request=None, responses={200: OpenApiResponse(description="Session revoked")})
     def post(self, request):
         key = request.session.session_key
         if key:
