@@ -3,7 +3,7 @@
 from .base import *  # noqa: F403
 
 DEBUG = False
-SECRET_KEY = "ci-only-django-test-secret-not-for-deployment"
+SECRET_KEY = "ci-only-django-test-secret-not-for-deployment"  # noqa: S105
 DATABASES = {"default": {"ENGINE": "django.db.backends.sqlite3", "NAME": ":memory:"}}
 SESSION_COOKIE_SECURE = False
 CSRF_COOKIE_SECURE = False
