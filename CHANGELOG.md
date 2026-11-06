@@ -11,6 +11,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - Stage 02 repository structure and collaboration/validation tooling.
 - Stage 04 independent Django API scaffold, isolated CI checks and OpenAPI probes.
 - Stage 05 React/Vite visual frontend with RTL Vazirmatn, responsive GSAP sidebar, dark/light themes and demo-only login/chat shells.
+- Stage 06 PostgreSQL schema/migrations for independent tenant, provider, account, chat, token and job metadata.
+- Stage 07 first-party Django session authentication with CSRF, device revocation, login throttling, audit events and opt-in password reset (not deployed).
 ### Security
 - Secrets, session profiles, uploads and local credentials excluded from version control.
 ### Infrastructure
