@@ -1,7 +1,7 @@
 # معماری مرجع AI API Maker
 
 ## هدف
-`https://srun.ir/aiapimaker/` یک سرویس جدید چندکاربره است که **React فرانت‌اند مستقل** و **Django API مستقل** دارد و هیچ تغییری در سرویس فعلی `/aigetway/` در فاز نخست نمی‌دهد.
+نشانی فعلیِ **موقت و قابل تغییر** `https://srun.ir/aiapimaker/` برای یک سرویس جدید چندکاربره است که **React فرانت‌اند مستقل** و **Django API مستقل** دارد و هیچ تغییری در سرویس فعلی `/aigetway/` در فاز نخست نمی‌دهد.
 
 ## مرزهای سرویس
 ```text
@@ -56,3 +56,26 @@ Legacy: /aigetway/ -> existing Flask services (unchanged)
 - Nginx فقط بعد از `nginx -t` و Backup تغییر می‌کند.
 - برای اجرای واقعی هر Connector، آزمون end-to-end و feature flag الزامی است.
 - بازنشستگی Flask قبلی خارج از Scope است مگر پس از انتقال و قبول صریح.
+
+## تصمیم جدید: دامنه و مسیر عمومی قابل تغییر (2026-11-06)
+
+**درخواست مالک پروژه:** نام/نشانی نهایی سایت قرار است تغییر کند. تا اعلام آدرس جدید، نام `srun.ir/aiapimaker` صرفاً `TEMPORARY_PUBLIC_URL` و مقصد استقرار **غیرقطعی** است. نام repository `aiapimaker` و شناسه‌های داخلی به domain وابسته نیستند.
+
+### تنظیمات لازم در Django/React/Nginx
+
+| تنظیم | هدف |
+|---|---|
+| `APP_PUBLIC_ORIGIN` | ریشه HTTPS نهایی؛ مثال فعلی `https://srun.ir` |
+| `APP_BASE_PATH` | مسیر React؛ مثال موقت `/aiapimaker/` یا `/` در دامنه مستقل |
+| `API_BASE_PATH` | مسیر API زیر مسیر اپ؛ مثال `/aiapimaker/api/v1/` |
+| `VITE_BASE_PATH` | `base` برای build فایل‌های React و Router basename |
+| `DJANGO_ALLOWED_HOSTS` | میزبان‌های مجاز شامل آدرس نهایی پس از تأیید |
+| `CSRF_TRUSTED_ORIGINS` | originهای مجاز دقیق؛ بدون wildcard عمومی |
+| `CORS_ALLOWED_ORIGINS` | فقط در صورت جداشدن origin رابط و API |
+| `MEDIA_PUBLIC_BASE_URL` | صدور لینک فایل روی دامنه جدید یا از reverse proxy |
+| `OAUTH_REDIRECT_BASE_URL` | مسیرهای redirect ثبت‌شده برای احراز هویت‌های مجاز |
+
+- backend و frontend باید URLها را از configuration تولید کنند؛ هیچ URL مربوط به دامنه موقت در business logic و API payload ثابت نباشد.
+- تا تعیین نام نهایی، تنظیم Nginx، گواهی TLS، redirect یا DNS در Production تغییر نکند.
+- پس از اعلام دامنه، کنترل DNS، TLS، دامنه مجاز Django، تنظیم cookie، CSRF و callbackهای OAuth و تست subpath/root انجام شود.
+- امکان redirect موقت/دائمی از نشانی سابق **فقط پس از راه‌اندازی موفق مقصد جدید و تصمیم مالک** فعال شود.
