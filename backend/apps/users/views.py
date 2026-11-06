@@ -253,6 +253,14 @@ class PasswordResetRequestView(PublicAPIView):
         serializer = PasswordResetRequestSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         email = serializer.validated_data["email"]
+        # Bound reset mail volume regardless of whether the account exists.
+        # The response remains identical when throttled to prevent enumeration.
+        keys = login_identifiers(request, "reset:" + email)
+        generic = Response({"status": "accepted"}, status=202)
+        generic["Cache-Control"] = "no-store"
+        if not check_login_allowed(keys):
+            return generic
+        note_failed_login(keys)
         users = get_user_model().objects.filter(email__iexact=email, is_active=True)
         for user in users:
             if not user.has_usable_password():
@@ -270,10 +278,9 @@ class PasswordResetRequestView(PublicAPIView):
                     fail_silently=False,
                 )
             except Exception:
-                return Response({"error": {"code": "mailer_unavailable"}}, status=503)
-        response = Response({"status": "accepted"}, status=202)
-        response["Cache-Control"] = "no-store"
-        return response
+                # Do not reveal whether an email address is registered.
+                pass
+        return generic
 
 
 @method_decorator(csrf_protect, name="dispatch")
