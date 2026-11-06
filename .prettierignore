@@ -1,0 +1,11 @@
+node_modules
+dist
+build
+coverage
+.venv
+*.lock
+.env*
+browser-profiles
+artifacts
+uploads
+media
