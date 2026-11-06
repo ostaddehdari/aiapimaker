@@ -77,3 +77,17 @@
 5. هیچ `docker system prune`، `rm -rf /var/lib/postgresql`، `swapoff` یا حذف نشست انجام نشود.
 
 **Gate:** `STAGE_01_IN_PROGRESS / CAPACITY_REVIEW_REQUIRED`؛ هنوز مجوز شروع نصب Stage 02 داده نشده است.
+
+## پیوست: پاک‌سازی تأییدشده Journal و سلامت سرور
+
+**منبع:** خروجی ارسال‌شده پس از اجرای دستی `journalctl --rotate` و `journalctl --vacuum-size=1G`.
+
+- با دستور vacuum، حدود **2.7G** از archived journal آزاد شد.
+- فضای journal پس از عملیات **980.1M** گزارش شد.
+- root filesystem پس از آن **99G استفاده، 17G آزاد، 86%** گزارش شد.
+- `aigetway-api`، `aigetway-worker`، `nginx`، `postgresql` و `redis-server` همچنان **active** بودند.
+- `https://srun.ir/aigetway/healthz` پاسخ `{"status":"ok","version":"0.6.0"}` داده است.
+- در `/opt` مسیرهای بزرگ شامل `/opt/teltest` (3.6G)، `/opt/tamap` (2.2G)، `/opt/teamgram-compat-test` (1.7G)، `/opt/stagepilot` (1.3G) و `/opt/vianoor-opensearch-runtime` (1.3G) هستند؛ **هیچ‌کدام بدون ممیزی یا درخواست صریح حذف نشوند**.
+- نام و نشانی `srun.ir/aiapimaker` موقتی است و پیش از استقرار باید URL جدید تعیین شود. مبنای معماری در [ARCHITECTURE.md](../../ARCHITECTURE.md) اصلاح شده است.
+
+**وضعیت:** بخشی از ریسک دیسک رفع شد؛ پایش ظرفیت CPU و انتخاب مقصد دامنه همچنان باز است. Stage 01 هنوز کامل نیست.
