@@ -19,7 +19,7 @@ python3 -m venv .venv
 pip install -r requirements-dev.txt
 export DJANGO_SETTINGS_MODULE=config.settings.testing
 python manage.py check
-python manage.py test --noinput
+python manage.py test apps.core --noinput
 python manage.py spectacular --file /tmp/aiapimaker-openapi.yml --validate
 ```
 
