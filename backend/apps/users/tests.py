@@ -180,3 +180,28 @@ class AuthFlowTests(TestCase):
         paths = schema.json()["paths"]
         self.assertIn(self.base + "login/", paths)
         self.assertIn(self.base + "password-reset/request/", paths)
+
+
+    def test_rotated_csrf_rejects_prelogin_token(self):
+        old_csrf = self.csrf
+        response = self._login()
+        self.assertEqual(response.status_code, 200)
+        self.assertNotEqual(self.csrf, old_csrf)
+        import json
+
+        rejected = self.client.post(
+            self.base + "logout/",
+            data=json.dumps({}),
+            content_type="application/json",
+            HTTP_X_CSRFTOKEN=old_csrf,
+        )
+        self.assertEqual(rejected.status_code, 403)
+        self.assertEqual(rejected.json()["error"]["code"], "csrf_failed")
+
+    @override_settings(PASSWORD_RESET_ENABLED=False)
+    def test_reset_fails_closed_until_mailer_is_explicitly_enabled(self):
+        response = self._post(
+            "password-reset/request/", {"email": "demo@example.test"}
+        )
+        self.assertEqual(response.status_code, 503)
+        self.assertEqual(response.json()["error"]["code"], "reset_not_configured")
