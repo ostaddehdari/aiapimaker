@@ -2,6 +2,7 @@
 
 Uses the CI-only SQLite database; production must use independent PostgreSQL.
 """
+import uuid
 from datetime import timedelta
 
 from django.contrib.auth import get_user_model
@@ -23,8 +24,8 @@ class SchemaIsolationTests(TestCase):
     @classmethod
     def setUpTestData(cls):
         user_model = get_user_model()
-        cls.alice = user_model.objects.create_user(username="alice", password=__import__("uuid").uuid4().hex)
-        cls.bob = user_model.objects.create_user(username="bob", password=__import__("uuid").uuid4().hex)
+        cls.alice = user_model.objects.create_user(username="alice", password=uuid.uuid4().hex)
+        cls.bob = user_model.objects.create_user(username="bob", password=uuid.uuid4().hex)
         cls.alice_tenant = Tenant.objects.create(slug="alice-workspace", name="Alice", owner=cls.alice)
         cls.bob_tenant = Tenant.objects.create(slug="bob-workspace", name="Bob", owner=cls.bob)
         TenantMembership.objects.create(
