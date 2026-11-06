@@ -1,0 +1,13 @@
+{
+  "name": "aiapimaker-monorepo",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Developer tooling for AI API Maker. Runtime frontend is introduced in Stage 05.",
+  "scripts": {
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "devDependencies": {
+    "prettier": "^3.4.0"
+  }
+}
