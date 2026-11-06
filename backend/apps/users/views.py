@@ -255,7 +255,7 @@ class PasswordResetRequestView(PublicAPIView):
         email = serializer.validated_data["email"]
         # Bound reset mail volume regardless of whether the account exists.
         # The response remains identical when throttled to prevent enumeration.
-        keys = login_identifiers(request, "reset:" + email)
+        keys = login_identifiers(request, email, purpose="reset")
         generic = Response({"status": "accepted"}, status=202)
         generic["Cache-Control"] = "no-store"
         if not check_login_allowed(keys):
