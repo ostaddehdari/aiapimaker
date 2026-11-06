@@ -35,12 +35,16 @@ class AuthFlowTests(TestCase):
         import json
 
         client = client or self.client
-        return client.post(
+        response = client.post(
             self.base + suffix,
             data=json.dumps(payload),
             content_type="application/json",
             HTTP_X_CSRFTOKEN=csrf if csrf is not None else self.csrf,
         )
+        if suffix == "login/" and response.status_code == 200:
+            if client is self.client:
+                self.csrf = response.json()["csrf_token"]
+        return response
 
     def _login(self, *, client=None, csrf=None):
         return self._post(
