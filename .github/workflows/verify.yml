@@ -60,6 +60,44 @@ jobs:
       - name: Ruff syntax and style
         run: ruff check backend
 
+  frontend:
+    name: frontend-react
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm install --no-audit --no-fund
+      - name: TypeScript check
+        working-directory: frontend
+        run: npm run lint
+      - name: React component tests
+        working-directory: frontend
+        run: npm run test
+      - name: Build under /aiapimaker/
+        working-directory: frontend
+        env:
+          VITE_BASE_PATH: /aiapimaker/
+        run: npm run build
+      - name: Build at domain root
+        working-directory: frontend
+        env:
+          VITE_BASE_PATH: /
+        run: npm run build
+      - name: Check that no remote font/CDN is required
+        working-directory: frontend
+        shell: bash
+        run: |
+          if grep -R -n -E '(https?://fonts\.googleapis\.com|https?://cdn\.)' src index.html; then
+            echo "External font/CDN reference is not allowed"
+            exit 1
+          fi
+
   secrets:
     name: gitleaks
     runs-on: ubuntu-latest
