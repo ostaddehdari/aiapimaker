@@ -9,6 +9,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - Stage 01 non-mutating Ubuntu audit procedures and baseline.
 - 40-stage, 320-task implementation plan.
 - Stage 02 repository structure and collaboration/validation tooling.
+- Stage 04 independent Django API scaffold, isolated CI checks and OpenAPI probes.
+- Stage 05 React/Vite visual frontend with RTL Vazirmatn, responsive GSAP sidebar, dark/light themes and demo-only login/chat shells.
 ### Security
 - Secrets, session profiles, uploads and local credentials excluded from version control.
 ### Infrastructure
