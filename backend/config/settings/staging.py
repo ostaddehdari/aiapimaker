@@ -1,0 +1,18 @@
+"""Staging: requires explicit secret and PostgreSQL. No public TLS redirect."""
+
+import os
+
+from django.core.exceptions import ImproperlyConfigured
+
+from .base import *  # noqa: F403
+
+if not os.getenv("DJANGO_SECRET_KEY"):
+    raise ImproperlyConfigured("DJANGO_SECRET_KEY is required for staging")
+if DATABASES["default"]["ENGINE"] != "django.db.backends.postgresql":  # noqa: F405
+    raise ImproperlyConfigured("PostgreSQL DATABASE_URL is required for staging")
+
+DEBUG = False
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+SECURE_SSL_REDIRECT = False  # Localhost testing before an approved HTTPS proxy.
+SECURE_CONTENT_TYPE_NOSNIFF = True
