@@ -19,13 +19,13 @@ def _fingerprint(kind: str, value: str) -> str:
     ).hexdigest()
 
 
-def login_identifiers(request, username: str) -> tuple[tuple[str, int], ...]:
+def login_identifiers(request, username: str, purpose: str = "login") -> tuple[tuple[str, int], ...]:
     # REMOTE_ADDR is safe from spoofed X-Forwarded-For, but a reverse proxy
     # must configure a trusted real-ip policy to avoid a shared localhost bucket.
     remote = str(request.META.get("REMOTE_ADDR", "unknown"))
     return (
-        (_fingerprint("ip", remote), settings.AUTH_LOGIN_IP_LIMIT),
-        (_fingerprint("user", username.casefold().strip()), settings.AUTH_LOGIN_USER_LIMIT),
+        (_fingerprint(purpose + ":ip", remote), settings.AUTH_LOGIN_IP_LIMIT),
+        (_fingerprint(purpose + ":user", username.casefold().strip()), settings.AUTH_LOGIN_USER_LIMIT),
     )
 
 
