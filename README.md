@@ -2,9 +2,9 @@
 
 > Multi-tenant AI orchestration platform — React + Django + PostgreSQL
 >
-> **Production target:** `https://srun.ir/aiapimaker/`
+> **Temporary historical target:** `https://srun.ir/aiapimaker/` — the final domain has not been selected.
 >
-> **Status:** Stages 01–03 review; Stage 04 independent Django API scaffold ready for CI/review. No new service deployed. No production deployment has occurred.
+> **Status:** Stages 01–04 in review; Stage 05 React demo frontend under review. No new service deployed.
 
 ## Roadmap
 - [40 stages / 320 work items](docs/ROADMAP-40-STAGES.md)
@@ -13,6 +13,7 @@
 - [Stage 02 repository conventions](docs/BRANCHING-AND-RELEASES.md)
 - [Stage completion checklist](docs/STAGE-EXIT-CRITERIA.md)
 - [Draft Django API contract](docs/API-CONTRACT-DRAFT.md)
+- [Stage 05 UI acceptance and scope](docs/STAGE-05-UI-ACCEPTANCE.md)
 
 ## Stack
 - React + TypeScript + Vite; Persian RTL layout; Vazirmatn/Vazir; Font Awesome; GSAP (respect reduced motion)
@@ -65,3 +66,18 @@ python manage.py test apps.core --noinput --settings=config.settings.testing
 ```
 
 Production credentials, Django/PostgreSQL installation, Nginx routing and final domain setup are deferred to a later, explicitly approved deployment stage.
+
+## Stage 05 — React frontend preview (not deployed)
+
+The independent [React demo](frontend/README.md) provides a Persian RTL login preview, admin/user shells, right collapsible GSAP sidebar, theme switcher and local-only chat demo. **No functional authentication or real API access exists in these preview routes**; do not expose them as a production admin site.
+
+```bash
+cd frontend
+npm install
+npm run lint
+npm run test
+VITE_BASE_PATH=/aiapimaker/ npm run build
+VITE_BASE_PATH=/ npm run build
+```
+
+CI runs these steps separately from the production VPS. Site name and public base path remain configurable.
