@@ -70,6 +70,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "22"
+      - name: Use npm 11 on CI (separate from the Ubuntu production host)
+        run: npm install --global npm@11
       - name: Install frontend dependencies
         working-directory: frontend
         run: npm install --no-audit --no-fund
