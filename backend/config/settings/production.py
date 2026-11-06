@@ -25,3 +25,11 @@ SECURE_HSTS_INCLUDE_SUBDOMAINS = False
 SECURE_HSTS_PRELOAD = False
 SESSION_COOKIE_SAMESITE = "Lax"
 CSRF_COOKIE_SAMESITE = "Lax"
+
+
+# Do not enable recovery unless a real SMTP transport is configured.
+if PASSWORD_RESET_ENABLED and (
+    not EMAIL_HOST or not EMAIL_HOST_USER or not EMAIL_HOST_PASSWORD
+    or DEFAULT_FROM_EMAIL.endswith("@example.invalid")
+):
+    raise ImproperlyConfigured("Password recovery requires tested SMTP credentials and sender")
