@@ -91,3 +91,21 @@
 - نام و نشانی `srun.ir/aiapimaker` موقتی است و پیش از استقرار باید URL جدید تعیین شود. مبنای معماری در [ARCHITECTURE.md](../../ARCHITECTURE.md) اصلاح شده است.
 
 **وضعیت:** بخشی از ریسک دیسک رفع شد؛ پایش ظرفیت CPU و انتخاب مقصد دامنه همچنان باز است. Stage 01 هنوز کامل نیست.
+
+
+## پیوست: بررسی قطع SSH و تأیید دوباره سلامت — 2026-11-06 18:54 UTC
+
+**منبع:** خروجی جدید کاربر از اتصال Git Bash به SSH سرور.
+
+- اتصال SSH قبلی با `Connection reset by peer` قطع شد، اما ورود مجدد با `ssh -t -p 2233 root@5.61.27.185` موفق بود؛ علت قطع ارتباط از این خروجی قابل تشخیص نیست.
+- MOTD جدید: Load `7.78`، دیسک `85.9%`، RAM `62%` و Swap `68%`. این مقادیر snapshot هستند، نه اثبات OOM یا خرابی.
+- پس از reconnect، `aigetway-api`، `aigetway-worker`، `nginx`، `postgresql` و `redis-server` همگی `active` گزارش شدند.
+- Health سرویس قدیمی: `{"status":"ok","version":"0.6.0"}`. لذا پس از قطع SSH دست‌کم در زمان تست، این سرویس سالم بوده است.
+- خطای `nvm` از تنظیم `prefix` در `/root/.npmrc` گزارش می‌شود. این پیام مانع ورود SSH نیست؛ در Stage مستقل و بدون تغییر محیط Node سرویس‌ها بررسی شود.
+- دامنه `srun.ir/aiapimaker` همچنان موقت است؛ مقصد جدید هنوز مشخص نشده. تغییر Nginx یا DNS انجام نشده است.
+
+### بررسی امن پیشنهادی
+- `vmstat 1 5` و `free -h` برای بررسی si/so فعلی و Available RAM.
+- `systemctl is-active ssh` و `journalctl -u ssh --since "-2 hours" --no-pager` با بررسی دستی و حذف IP/شناسه‌های حساس پیش از اشتراک.
+- `journalctl -k --since "-2 hours" --no-pager | grep -Ei 'out of memory|oom|killed process'` برای تشخیص قطع فرایندها؛ نبود خروجی = فقط نبود رخداد در بازه بررسی.
+- اجرای ممیزی بدون نصب سرویس جدید یا حذف داده.
