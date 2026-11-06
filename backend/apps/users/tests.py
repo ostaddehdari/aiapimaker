@@ -8,12 +8,18 @@ from urllib.parse import parse_qs, urlparse
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core import mail
-from django.test import Client, TestCase
+from django.test import Client, TestCase, override_settings
 from django.utils import timezone
 
 from .security_models import AuthDeviceSession, AuthEvent, LoginThrottle
 
 
+@override_settings(
+    PASSWORD_RESET_ENABLED=True,
+    EMAIL_BACKEND="django.core.mail.backends.locmem.EmailBackend",
+    AUTH_LOGIN_USER_LIMIT=3,
+    AUTH_LOGIN_IP_LIMIT=15,
+)
 class AuthFlowTests(TestCase):
     def setUp(self):
         self.base = settings.API_BASE_PATH + "auth/"
