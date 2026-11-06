@@ -44,6 +44,10 @@ class Chat(models.Model):
             if self.provider_id and self.account.provider_id != self.provider_id:
                 raise ValidationError({"provider": "Provider must match the selected account."})
 
+    def save(self, *args, **kwargs):
+        self.clean()  # Owner/account consistency before creating chat rows.
+        return super().save(*args, **kwargs)
+
 
 class Message(models.Model):
     class Role(models.TextChoices):
