@@ -109,3 +109,19 @@
 - `systemctl is-active ssh` و `journalctl -u ssh --since "-2 hours" --no-pager` با بررسی دستی و حذف IP/شناسه‌های حساس پیش از اشتراک.
 - `journalctl -k --since "-2 hours" --no-pager | grep -Ei 'out of memory|oom|killed process'` برای تشخیص قطع فرایندها؛ نبود خروجی = فقط نبود رخداد در بازه بررسی.
 - اجرای ممیزی بدون نصب سرویس جدید یا حذف داده.
+
+
+## پیوست: بررسی سوم منابع و اتصال (2026-11-06 19:22:29 UTC)
+- Root: 116 GiB کل، 100 GiB مصرف، **17 GiB آزاد / 87%**.
+- RAM: 11 GiB کل، 5.7 GiB مصرف، **6.0 GiB available**.
+- Swap: 4 GiB کل، 2.7 GiB مصرف.
+- چهار بازه ۱ ثانیه‌ای vmstat پس از سطر میانگین: `si=0` و `so=0`؛ پس شواهدی از swap thrashing در همان بازه دیده نشد.
+- CPU steal در بازه‌های نمونه‌برداری: 10%, 15%, 22%, 23%; همچنان قابل‌توجه و نیازمند پایش VPS.
+- سرویس‌های `ssh`, `nginx`, `postgresql`, `redis-server`, `aigetway-api`, `aigetway-worker`, `antigravity-gateway-api` و `antigravity-gateway-worker` همگی `active`.
+- `https://srun.ir/aigetway/healthz`: `status=ok`, `version=0.6.0`.
+- رخداد OOM در journal کرنل در بازه سه‌ساعته: **۰** (نه اثبات عدم وجود مشکل در بازه‌های دیگر).
+- SSH در IPv4 و IPv6 روی پورت 2233 در حال LISTEN است.
+- اتصال حساب Antigravity هنوز تأیید نشده؛ وجود سرویس کافی نیست.
+- نام دامنه/مسیر نهایی پروژه جدید همچنان تعیین نشده است.
+
+**ارزیابی:** کنترل پایه سلامتی سرور PASS؛ راه‌اندازی production مرورگر/Workerهای جدید همچنان نیازمند capacity gate است. شروع توسعه کد در GitHub (Stage 02) بدون نصب روی سرور مجاز است؛ Stage 01 هنوز OPEN.
