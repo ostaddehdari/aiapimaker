@@ -76,7 +76,7 @@ class AuthFlowTests(TestCase):
         self.assertEqual(AuthDeviceSession.objects.filter(revoked_at__isnull=True).count(), 0)
 
     def test_wrong_password_lockout_is_generic_and_audited_without_plain_identifier(self):
-        for i in range(3):
+        for _ in range(3):
             response = self._post("login/", {"username": "demo_user", "password": "incorrect"})
             self.assertEqual(response.status_code, 401)
         response = self._login()
