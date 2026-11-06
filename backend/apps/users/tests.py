@@ -66,7 +66,7 @@ class AuthFlowTests(TestCase):
         self.assertEqual(response.json()["error"]["code"], "csrf_failed")
 
     def test_login_me_logout_and_secure_cookie_attributes(self):
-        self.assertEqual(self.client.get(self.base + "me/").status_code, 403)
+        self.assertEqual(self.client.get(self.base + "me/").status_code, 401)
         login = self._login()
         self.assertEqual(login.status_code, 200)
         self.assertEqual(login.json()["user"]["role"], "user")
