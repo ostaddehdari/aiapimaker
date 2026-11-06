@@ -52,7 +52,7 @@ jobs:
       - name: Django system checks
         run: python backend/manage.py check --settings=config.settings.testing
       - name: Run isolated Django tests
-        run: python backend/manage.py test tests --noinput --settings=config.settings.testing
+        run: python backend/manage.py test apps.core --noinput --settings=config.settings.testing
       - name: Validate OpenAPI schema
         run: python backend/manage.py spectacular --file /tmp/aiapimaker-openapi.yaml --validate --settings=config.settings.testing
       - name: Ruff syntax and style
