@@ -58,3 +58,6 @@ class TenantMembership(models.Model):
             ),
         ]
         indexes = [models.Index(fields=["user", "is_active"], name="iam_member_user_active")]
+
+# Import the Stage 07 auth tables so Django registers them during app loading.
+from .security_models import AuthDeviceSession, LoginThrottle  # noqa: E402, F401
