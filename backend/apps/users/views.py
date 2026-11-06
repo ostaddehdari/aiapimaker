@@ -44,7 +44,6 @@ from .serializers import (
     SessionRevokeSerializer,
 )
 
-
 logger = logging.getLogger(__name__)
 
 
