@@ -49,6 +49,17 @@ jobs:
           python-version: "3.12"
       - name: Install backend dev requirements
         run: python -m pip install --disable-pip-version-check -r backend/requirements-dev.txt
+      - name: Generate Stage 07 auth migrations in disposable runner for review
+        run: python backend/manage.py makemigrations users --noinput --settings=config.settings.testing
+      - name: Print generated auth migration for committing to source
+        shell: bash
+        run: |
+          python - <<'PY'
+          import base64
+          from pathlib import Path
+          for file in sorted(Path("backend/apps/users/migrations").glob("0002*.py")):
+              print("AUTH_MIGRATION_BASE64::" + file.as_posix() + "::" + base64.b64encode(file.read_bytes()).decode("ascii"))
+          PY
       - name: Ensure all schema migrations are committed
         run: python backend/manage.py makemigrations --check --dry-run --settings=config.settings.testing
       - name: Django system checks
