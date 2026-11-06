@@ -59,6 +59,8 @@ jobs:
         run: pytest -q backend/apps/core/tests.py backend/apps/users/tests.py --ds=config.settings.testing
       - name: Validate OpenAPI schema
         run: python backend/manage.py spectacular --file /tmp/aiapimaker-openapi.yaml --validate --settings=config.settings.testing
+      - name: Report exact import-order suggestion (non-mutating)
+        run: ruff check backend/apps/users/views.py --select I001 --fix --diff || true
       - name: Ruff syntax and style
         run: ruff check backend
 
