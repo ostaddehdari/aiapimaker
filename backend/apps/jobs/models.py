@@ -144,3 +144,12 @@ class ResourceLease(models.Model):
             )
         ]
         indexes = [models.Index(fields=["expires_at", "released_at"], name="iam_lease_expiry")]
+
+    def clean(self):
+        super().clean()
+        if self.job_id and self.account_id and self.job.account_id != self.account_id:
+            raise ValidationError({"account": "Lease account must match the job account."})
+
+    def save(self, *args, **kwargs):
+        self.clean()
+        return super().save(*args, **kwargs)
