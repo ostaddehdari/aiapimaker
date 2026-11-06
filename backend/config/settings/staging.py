@@ -16,3 +16,11 @@ SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
 SECURE_SSL_REDIRECT = False  # Localhost testing before an approved HTTPS proxy.
 SECURE_CONTENT_TYPE_NOSNIFF = True
+
+
+# Do not enable recovery unless a real SMTP transport is configured.
+if PASSWORD_RESET_ENABLED and (
+    not EMAIL_HOST or not EMAIL_HOST_USER or not EMAIL_HOST_PASSWORD
+    or DEFAULT_FROM_EMAIL.endswith("@example.invalid")
+):
+    raise ImproperlyConfigured("Password recovery requires tested SMTP credentials and sender")
