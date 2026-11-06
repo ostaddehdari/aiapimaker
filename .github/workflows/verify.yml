@@ -49,25 +49,14 @@ jobs:
           python-version: "3.12"
       - name: Install backend dev requirements
         run: python -m pip install --disable-pip-version-check -r backend/requirements-dev.txt
-      - name: Generate Stage 07 auth migrations in disposable runner for review
-        run: python backend/manage.py makemigrations users --noinput --settings=config.settings.testing
-      - name: Print generated auth migration for committing to source
-        shell: bash
-        run: |
-          python - <<'PY'
-          import base64
-          from pathlib import Path
-          for file in sorted(Path("backend/apps/users/migrations").glob("0002*.py")):
-              print("AUTH_MIGRATION_BASE64::" + file.as_posix() + "::" + base64.b64encode(file.read_bytes()).decode("ascii"))
-          PY
       - name: Ensure all schema migrations are committed
         run: python backend/manage.py makemigrations --check --dry-run --settings=config.settings.testing
       - name: Django system checks
         run: python backend/manage.py check --settings=config.settings.testing
       - name: Run isolated Django tests
-        run: python backend/manage.py test apps.core --noinput --settings=config.settings.testing
+        run: python backend/manage.py test apps.core apps.users --noinput --settings=config.settings.testing
       - name: Run pytest-django health tests
-        run: pytest -q backend/apps/core/tests.py --ds=config.settings.testing
+        run: pytest -q backend/apps/core/tests.py backend/apps/users/tests.py --ds=config.settings.testing
       - name: Validate OpenAPI schema
         run: python backend/manage.py spectacular --file /tmp/aiapimaker-openapi.yaml --validate --settings=config.settings.testing
       - name: Ruff syntax and style
@@ -119,7 +108,7 @@ jobs:
           python backend/manage.py migrate artifacts zero --noinput --settings=config.settings.staging
           python backend/manage.py migrate artifacts --noinput --settings=config.settings.staging
       - name: Run schema isolation tests against temporary PostgreSQL
-        run: python backend/manage.py test apps.core --noinput --settings=config.settings.staging
+        run: python backend/manage.py test apps.core apps.users --noinput --settings=config.settings.staging
 
   frontend:
     name: frontend-react
