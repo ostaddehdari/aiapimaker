@@ -4,6 +4,7 @@ import os
 
 from django.core.exceptions import ImproperlyConfigured
 
+from . import base as base_settings
 from .base import *  # noqa: F403
 
 if not os.getenv("DJANGO_SECRET_KEY") or len(os.environ["DJANGO_SECRET_KEY"]) < 32:
@@ -28,8 +29,10 @@ CSRF_COOKIE_SAMESITE = "Lax"
 
 
 # Do not enable recovery unless a real SMTP transport is configured.
-if PASSWORD_RESET_ENABLED and (
-    not EMAIL_HOST or not EMAIL_HOST_USER or not EMAIL_HOST_PASSWORD
-    or DEFAULT_FROM_EMAIL.endswith("@example.invalid")
+if base_settings.PASSWORD_RESET_ENABLED and (
+    not base_settings.EMAIL_HOST
+    or not base_settings.EMAIL_HOST_USER
+    or not base_settings.EMAIL_HOST_PASSWORD
+    or base_settings.DEFAULT_FROM_EMAIL.endswith("@example.invalid")
 ):
     raise ImproperlyConfigured("Password recovery requires tested SMTP credentials and sender")
