@@ -1,0 +1,8 @@
+# Stage 04. Python >=3.11. Resolve to a locked requirements file before production.
+Django>=5.2.8,<5.3
+djangorestframework>=3.17.2,<3.18
+drf-spectacular[sidecar]>=0.30.0,<0.31
+dj-database-url>=3.1.2,<3.2
+psycopg[binary]>=3.2,<4
+gunicorn>=23,<24
+uvicorn>=0.35,<1
