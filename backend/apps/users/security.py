@@ -14,7 +14,7 @@ from .security_models import LoginThrottle
 def _fingerprint(kind: str, value: str) -> str:
     return hmac.new(
         settings.SECRET_KEY.encode("utf-8"),
-        f"{kind}:{value}".encode("utf-8"),
+        f"{kind}:{value}".encode(),
         hashlib.sha256,
     ).hexdigest()
 
