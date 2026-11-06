@@ -39,6 +39,21 @@ DENIED_SUFFIXES = {".pem", ".p12", ".pfx", ".key"}
 EXCLUDED_DIRECTORIES = {".git", "node_modules", ".venv", "__pycache__"}
 
 
+def check_markdown_fences() -> list[str]:
+    """Detect unmatched fenced Markdown blocks in checked-in documentation."""
+    errors: list[str] = []
+    for path in ROOT.rglob("*.md"):
+        if set(path.relative_to(ROOT).parts) & EXCLUDED_DIRECTORIES:
+            continue
+        opened_at: int | None = None
+        for number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), start=1):
+            if line.lstrip().startswith("```"):
+                opened_at = number if opened_at is None else None
+        if opened_at is not None:
+            errors.append(f"UNCLOSED MARKDOWN FENCE: {path.relative_to(ROOT)}:{opened_at}")
+    return errors
+
+
 def main() -> int:
     missing = [name for name in REQUIRED if not (ROOT / name).is_file()]
     if missing:
@@ -56,12 +71,14 @@ def main() -> int:
         if name.startswith(".env.") and name != ".env.example":
             risky.append(str(path.relative_to(ROOT)))
 
+    risky.extend(check_markdown_fences())
+
     if risky:
         for item in sorted(set(risky)):
             print(f"UNSAFE FILE: {item}")
         return 1
 
-    print(f"REPOSITORY_STRUCTURE_PASS: {len(REQUIRED)} expected files; no denied files found")
+    print(f"REPOSITORY_STRUCTURE_PASS: {len(REQUIRED)} expected files; no denied files or unclosed Markdown fences")
     return 0
 
 
