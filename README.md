@@ -4,7 +4,7 @@
 >
 > **Temporary historical target:** `https://srun.ir/aiapimaker/` — the final domain has not been selected.
 >
-> **Status:** Stages 01–05 in review; Stage 06 multi-tenant PostgreSQL schema in CI/review. No new service deployed.
+> **Status:** Stages 01–06 in review; Stage 07 first-party Django auth API in CI/review. No new service deployed.
 
 ## Roadmap
 - [40 stages / 320 work items](docs/ROADMAP-40-STAGES.md)
@@ -87,3 +87,7 @@ CI runs these steps separately from the production VPS. Site name and public bas
 The [data model and migration plan](docs/STAGE-06-DATA-MODEL.md) includes UUID users/tenants, multiple provider accounts, hashed scoped API token metadata, chats/messages, jobs/leases and private artifacts. Django-generated migrations and safe **disabled** provider seeds are committed.
 
 CI verifies fresh migrations, reversible seed/artifact schema steps and owner-isolation tests on disposable PostgreSQL 16. This does not create any database or alter `/aigetway/` on the production server. Permission-enforced user dashboards and real providers remain future work.
+
+## Stage 07 — first-party Django authentication (not deployed)
+
+[Session auth and account recovery contract](docs/STAGE-07-AUTH.md) defines CSRF bootstrap, login/logout, current user, per-device session inventory/revoke, password changes and opt-in SMTP-backed password resets. These APIs are separate from provider login/ChatGPT credentials. MFA is a future security-stage implementation, not currently active. Stage 09 will connect the React login UI. No production server configuration has changed.
