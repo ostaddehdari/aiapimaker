@@ -96,6 +96,10 @@ class Job(models.Model):
         ):
             raise ValidationError({"chat": "Job chat must belong to its owner and tenant."})
 
+    def save(self, *args, **kwargs):
+        self.clean()  # Tenant/account/chat checks on ordinary job persistence.
+        return super().save(*args, **kwargs)
+
 
 class Attempt(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
