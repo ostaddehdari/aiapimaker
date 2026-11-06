@@ -6,6 +6,8 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import Q
 
+from apps.users.models import TenantMembership
+
 
 class ChatQuerySet(models.QuerySet):
     def for_owner(self, user):
@@ -38,6 +40,10 @@ class Chat(models.Model):
 
     def clean(self):
         super().clean()
+        if self.owner_id and self.tenant_id and not TenantMembership.objects.filter(
+            tenant_id=self.tenant_id, user_id=self.owner_id, is_active=True
+        ).exists():
+            raise ValidationError({"owner": "Chat owner must be an active tenant member."})
         if self.account_id:
             if self.account.owner_id != self.owner_id or self.account.tenant_id != self.tenant_id:
                 raise ValidationError({"account": "Chat account must belong to its owner/tenant."})
