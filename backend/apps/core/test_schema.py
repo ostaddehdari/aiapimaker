@@ -210,6 +210,11 @@ class SchemaIsolationTests(TestCase):
                 job=job, worker=worker, account=self.alice_account,
                 expires_at=timezone.now() + timedelta(minutes=5)
             )
+        with self.assertRaises(ValidationError):
+            ResourceLease.objects.create(
+                job=job, worker=worker, account=self.bob_account,
+                expires_at=timezone.now() + timedelta(minutes=5)
+            )
 
 
     def test_ordinary_save_rejects_cross_tenant_rows(self):
