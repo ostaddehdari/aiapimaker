@@ -63,5 +63,9 @@ class ProviderAccount(models.Model):
         if self.connector_id and self.provider_id and self.connector.provider_id != self.provider_id:
             raise ValidationError({"connector": "Connector must belong to the selected provider."})
 
+    def save(self, *args, **kwargs):
+        self.clean()  # Reject mismatched owner/tenant/connector on ordinary ORM writes.
+        return super().save(*args, **kwargs)
+
     def __str__(self):
         return f"{self.provider_id}:{self.label}"
