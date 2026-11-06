@@ -4,7 +4,7 @@
 >
 > **Production target:** `https://srun.ir/aiapimaker/`
 >
-> **Status:** Stage 01 audit active; Stage 02 repo tooling in review. No new service deployed. No production deployment has occurred.
+> **Status:** Stages 01–03 review; Stage 04 independent Django API scaffold ready for CI/review. No new service deployed. No production deployment has occurred.
 
 ## Roadmap
 - [40 stages / 320 work items](docs/ROADMAP-40-STAGES.md)
@@ -50,3 +50,18 @@ Every stage has exactly eight checkbox work items and a Definition of Done. No s
 | `tests/` | Shared tests and fixtures |
 
 Setup and contribution guidance: [CONTRIBUTING.md](CONTRIBUTING.md). Target public domain/URL is **not final**; deployment must read it from configuration.
+
+## Stage 04 — Django API (not deployed)
+
+The new [Django backend](backend/README.md) provides `health/`, `live/`, `ready/` and OpenAPI routes under configurable `API_BASE_PATH`. Runtime requirements are isolated to `backend/requirements.txt`. For safe CI run:
+
+```bash
+cd backend
+python3 -m venv .venv
+. .venv/bin/activate
+python -m pip install -r requirements-dev.txt
+python manage.py check --settings=config.settings.testing
+python manage.py test apps.core --noinput --settings=config.settings.testing
+```
+
+Production credentials, Django/PostgreSQL installation, Nginx routing and final domain setup are deferred to a later, explicitly approved deployment stage.
