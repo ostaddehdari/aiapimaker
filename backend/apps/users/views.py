@@ -1,5 +1,6 @@
 """First-party session authentication; no external AI account/session is accessed."""
 
+import logging
 from datetime import timedelta
 from urllib.parse import urlencode
 from uuid import UUID
@@ -28,7 +29,12 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .security import check_login_allowed, login_identifiers, note_failed_login, note_successful_login
+from .security import (
+    check_login_allowed,
+    login_identifiers,
+    note_failed_login,
+    note_successful_login,
+)
 from .security_models import AuthDeviceSession, AuthEvent, session_digest
 from .serializers import (
     ChangePasswordSerializer,
@@ -37,6 +43,9 @@ from .serializers import (
     PasswordResetRequestSerializer,
     SessionRevokeSerializer,
 )
+
+
+logger = logging.getLogger(__name__)
 
 
 def csrf_failure(request, reason=""):
@@ -278,8 +287,8 @@ class PasswordResetRequestView(PublicAPIView):
                     fail_silently=False,
                 )
             except Exception:
-                # Do not reveal whether an email address is registered.
-                pass
+                # Log a generic failure without user-supplied email or token.
+                logger.warning("Password reset delivery failed", exc_info=False)
         return generic
 
 
