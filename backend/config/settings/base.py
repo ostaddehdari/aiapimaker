@@ -153,7 +153,13 @@ AUTH_LOGIN_USER_LIMIT = 5
 AUTH_LOGIN_IP_LIMIT = 25
 AUTH_THROTTLE_WINDOW_SECONDS = 15 * 60
 AUTH_LOCK_SECONDS = 15 * 60
-PASSWORD_RESET_ENABLED = False  # Opt in after SMTP verification; CI overrides.
+PASSWORD_RESET_ENABLED = os.getenv("PASSWORD_RESET_ENABLED", "false").lower() == "true"
 DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "noreply@example.invalid")
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = os.getenv("EMAIL_HOST", "")
+EMAIL_PORT = int(os.getenv("EMAIL_PORT", "587"))
+EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "true").lower() == "true"
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "")
 CSRF_FAILURE_VIEW = "apps.users.views.csrf_failure"
 X_FRAME_OPTIONS = "DENY"
