@@ -56,5 +56,9 @@ class Artifact(models.Model):
         ):
             raise ValidationError({"message": "Artifact message belongs to another owner/tenant."})
 
+    def save(self, *args, **kwargs):
+        self.clean()  # Prevent cross-owner file/job references on ORM writes.
+        return super().save(*args, **kwargs)
+
     def __str__(self):
         return f"Artifact {self.pk}"
