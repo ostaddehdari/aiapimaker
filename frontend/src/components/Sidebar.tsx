@@ -43,6 +43,7 @@ export function Sidebar({ role, onCollapseChange }: SidebarProps) {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const sidebarRef = useRef<HTMLElement>(null);
+  const mobileOpenerRef = useRef<HTMLButtonElement>(null);
   const menuId = `sidebar-${role}`;
   const items = role === 'admin' ? adminItems : userItems;
 
@@ -61,6 +62,18 @@ export function Sidebar({ role, onCollapseChange }: SidebarProps) {
     };
   }, [collapsed]);
 
+  useEffect(() => {
+    if (!mobileOpen) return;
+    const onEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setMobileOpen(false);
+        mobileOpenerRef.current?.focus();
+      }
+    };
+    document.addEventListener('keydown', onEscape);
+    return () => document.removeEventListener('keydown', onEscape);
+  }, [mobileOpen]);
+
   const toggle = () => {
     setCollapsed((previous) => {
       onCollapseChange?.(!previous);
@@ -73,6 +86,7 @@ export function Sidebar({ role, onCollapseChange }: SidebarProps) {
     <>
       <button
         className="mobile-menu-button icon-button"
+        ref={mobileOpenerRef}
         type="button"
         aria-controls={menuId}
         aria-expanded={mobileOpen}
