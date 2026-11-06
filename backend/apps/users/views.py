@@ -115,7 +115,13 @@ class LoginView(PublicAPIView):
         request.session["auth_device_id"] = str(device.id)
         note_successful_login(keys)
         AuthEvent.record("login_success", request, user=user, identifier=keys[1][0], success=True)
-        response = Response({"user": public_user(user), "session_id": str(device.id)})
+        from django.middleware.csrf import get_token
+
+        response = Response({
+            "user": public_user(user),
+            "session_id": str(device.id),
+            "csrf_token": get_token(request),
+        })
         response["Cache-Control"] = "no-store"
         return response
 
