@@ -49,6 +49,17 @@ jobs:
           python-version: "3.12"
       - name: Install backend dev requirements
         run: python -m pip install --disable-pip-version-check -r backend/requirements-dev.txt
+      - name: Generate initial migrations in isolated CI workspace
+        run: python backend/manage.py makemigrations users providers accounts tokens chats jobs artifacts --noinput --settings=config.settings.testing
+      - name: Emit migration sources for review (no credentials)
+        shell: bash
+        run: |
+          python - <<'PY'
+          import base64
+          from pathlib import Path
+          for file in sorted(Path("backend/apps").glob("*/migrations/0*.py")):
+              print("MIGRATION_BASE64::" + file.as_posix() + "::" + base64.b64encode(file.read_bytes()).decode("ascii"))
+          PY
       - name: Django system checks
         run: python backend/manage.py check --settings=config.settings.testing
       - name: Run isolated Django tests
