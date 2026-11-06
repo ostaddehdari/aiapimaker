@@ -4,7 +4,7 @@
 >
 > **Temporary historical target:** `https://srun.ir/aiapimaker/` — the final domain has not been selected.
 >
-> **Status:** Stages 01–04 in review; Stage 05 React demo frontend under review. No new service deployed.
+> **Status:** Stages 01–05 in review; Stage 06 multi-tenant PostgreSQL schema in CI/review. No new service deployed.
 
 ## Roadmap
 - [40 stages / 320 work items](docs/ROADMAP-40-STAGES.md)
@@ -81,3 +81,9 @@ VITE_BASE_PATH=/ npm run build
 ```
 
 CI runs these steps separately from the production VPS. Site name and public base path remain configurable.
+
+## Stage 06 — independent PostgreSQL schema (not deployed)
+
+The [data model and migration plan](docs/STAGE-06-DATA-MODEL.md) includes UUID users/tenants, multiple provider accounts, hashed scoped API token metadata, chats/messages, jobs/leases and private artifacts. Django-generated migrations and safe **disabled** provider seeds are committed.
+
+CI verifies fresh migrations, reversible seed/artifact schema steps and owner-isolation tests on disposable PostgreSQL 16. This does not create any database or alter `/aigetway/` on the production server. Permission-enforced user dashboards and real providers remain future work.
