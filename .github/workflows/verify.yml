@@ -103,6 +103,10 @@ jobs:
         run: |
           python backend/manage.py migrate providers 0001 --noinput --settings=config.settings.staging
           python backend/manage.py migrate providers 0002 --noinput --settings=config.settings.staging
+      - name: Roll back and replay artifact schema on temporary PostgreSQL
+        run: |
+          python backend/manage.py migrate artifacts zero --noinput --settings=config.settings.staging
+          python backend/manage.py migrate artifacts --noinput --settings=config.settings.staging
       - name: Run schema isolation tests against temporary PostgreSQL
         run: python backend/manage.py test apps.core --noinput --settings=config.settings.staging
 
